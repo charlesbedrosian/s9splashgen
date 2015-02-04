@@ -17,6 +17,8 @@ else
   end
 end
 
+
+
 device = (ARGV.count > 1 ? ARGV[1] : 'iphone')
 img = ImageList.new(img_name)
 
@@ -87,14 +89,18 @@ def log(width, height, scale, filename)
   puts "#{s}(#{f}) -> #{fs}: #{filename}"
 end
 
+config_file = File.new('config+splash.xml', 'w+')
+`mkdir -p screens`
 `rm screens/*.png` unless Dir['screens/*.png'].empty?
 sizes.each do |s|
   if device == 'universal' || s[:idiom].start_with?(device)
     width = s[:scale]*s[:width]
     height = s[:scale]*s[:height]
+    name = s[:name]
     scaled_img = img.resize_to_fill(width, height)
     filename = 'screens/' + s[:name]
     log(width, height, s[:scale], filename)
     scaled_img.write(filename)
+	config_file.syswrite("<splash src=\"assets/screens/#{name}\" width=\"#{width}\" height=\"#{height}\"/>\n")
   end
 end
